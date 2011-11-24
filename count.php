@@ -1,9 +1,22 @@
 <?php
- 
- $username = "izotvorec"; //username
- $password = "wc3dfclm";  //password
- $type     = "json";       //outputType 
- $curl 	   = curl_init();
+ //Namba username
+ $username = "";
+ //Namba password
+ $password = "";
+ //outputType (не трогать) 
+ $type  = "json";
+ //адрес мыла
+ $email = "";
+ //номер аськи, на который слать количесто новых писем
+ $icq_num = "";
+ //номер телефона, на который слать количесто новых писем
+ $pho_num = "996xxxxxxxxx";
+
+ ############################################################################################
+ $b_icq_uin   = "";		//uin бота
+ $b_icq_pass  = "";		//pass бота
+ ############################################################################################
+ $curl 	    = curl_init();			//инициализируем cURL
  
  curl_setopt($curl, CURLOPT_URL, 'http://api.namba.kg/getNewMailCount.php'); 
  curl_setopt($curl, CURLOPT_POST, 1);
@@ -12,9 +25,32 @@
  "username=".urlencode("$username")."&password=".urlencode("$password")."&outputType=".urlencode("$type"));
  curl_setopt($curl, CURLOPT_USERAGENT, 'Shved');
  
- $count = curl_exec($curl);
- $array = json_decode($count, true);
- echo $array['new_messages'];
+ $count  = curl_exec($curl);
+ $array  = json_decode($count, true);
+ $amount = $array['new_messages'];
+ 	echo $amount;
+
+ if(!empty($amount))
+ {
+    include('WebIcqLite.class.php');
+  
+    $send = "You have $amount new messages in:\r\n$email.";    
+    $send = iconv("UTF-8","cp1251",$send);
+
+    define('UIN', $b_icq_uin);
+    define('PASSWORD', $b_icq_pass);
+
+    $icq = new WebIcqLite();
+    
+    if($icq->connect(UIN, PASSWORD))
+    {
+       if(!$icq->send_message("$icq_num", "$send"))
+       {
+       	  $icq->error();
+       }
+    }
+    $icq->disconnect();
+ }
  curl_close($curl);
 
 ?>
