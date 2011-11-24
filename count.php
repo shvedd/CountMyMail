@@ -1,7 +1,7 @@
 <?php
  
- $username = "izotvorec";
- $password = "wc3dfclm";
+ $username = "izotvorec"; //username
+ $password = "password"; //password
 
 ?>
 <html>
